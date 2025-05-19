@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  posts     Post[]
+  schedules Schedule[]
+  sessions  Session[]
+  platformAccounts PlatformAccount[]
+  llmLogs   LLMLog[]
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  content    String
+  platform   String
+  tone       String
+  hashtags   String[]
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  schedule   Schedule?
+  engagement EngagementStat?
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  postId    String   @unique
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  runAt     DateTime
+  status    String   @default("pending")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  refreshToken String
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+}
+
+model LLMLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  prompt    String
+  response  String
+  type      String
+  createdAt DateTime @default(now())
+}
+
+model PlatformAccount {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  platform     String
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime?
+}
+
+model EngagementStat {
+  id         String   @id @default(uuid())
+  postId     String   @unique
+  post       Post     @relation(fields: [postId], references: [id])
+  impressions Int
+  likes      Int
+  comments   Int
+  shares     Int
+  fetchedAt  DateTime @default(now())
+}
