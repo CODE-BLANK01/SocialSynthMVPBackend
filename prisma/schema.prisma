@@ -13,34 +13,45 @@ model User {
   password  String
   name      String?
   createdAt DateTime @default(now())
-  posts     Post[]
-  schedules Schedule[]
-  sessions  Session[]
+
+  posts            Post[]            @relation("UserPosts")
+  schedules        Schedule[]        @relation("UserSchedules")
+  sessions         Session[]
   platformAccounts PlatformAccount[]
-  llmLogs   LLMLog[]
+  llmLogs          LLMLog[]
 }
 
 model Post {
-  id         String   @id @default(uuid())
-  content    String
-  platform   String
-  tone       String
-  hashtags   String[]
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  schedule   Schedule?
-  engagement EngagementStat?
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation("UserPosts", fields: [userId], references: [id])
+
+  platform    String
+  type        String
+  content     String
+  imagePath   String?
+  url         String?
+  title       String?
+  description String?
+
+  scheduledAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  schedule       Schedule?
+  engagementStat EngagementStat?
 }
 
 model Schedule {
   id        String   @id @default(uuid())
   postId    String   @unique
-  post      Post     @relation(fields: [postId], references: [id])
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   runAt     DateTime
-  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation("UserSchedules", fields: [userId], references: [id])
 }
 
 model Session {
@@ -67,19 +78,27 @@ model PlatformAccount {
   id           String   @id @default(uuid())
   userId       String
   user         User     @relation(fields: [userId], references: [id])
-  platform     String
+
+  platform     String   // e.g., "linkedin", "instagram", etc.
+  externalId   String
+  username     String?
   accessToken  String
   refreshToken String?
   expiresAt    DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, platform]) // 👈 This is needed
 }
 
 model EngagementStat {
-  id         String   @id @default(uuid())
-  postId     String   @unique
-  post       Post     @relation(fields: [postId], references: [id])
+  id          String   @id @default(uuid())
+  postId      String   @unique
   impressions Int
-  likes      Int
-  comments   Int
-  shares     Int
-  fetchedAt  DateTime @default(now())
+  likes       Int
+  comments    Int
+  createdAt   DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
 }
