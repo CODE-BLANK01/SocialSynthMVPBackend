@@ -1,12 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import authRoutes from "./routes/authRoutes"; // ✅ this is a router, not a function
 import contentRoutes from "./routes/contentRoutes"; // ✅ this is a router, not a function
 import linkedinRoutes from "./routes/linkedinRoutes";
 import oauthRoutes from "./routes/oauthRoutes"; // ✅ this is a router, not a function
-
-dotenv.config();
 
 const app = express();
 app.use(cors());
