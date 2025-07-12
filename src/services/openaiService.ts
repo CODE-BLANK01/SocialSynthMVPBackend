@@ -12,12 +12,12 @@ const openai = new OpenAI({
 export const generateCaption = async (prompt: string): Promise<string> => {
   try {
     const completion = await openai.chat.completions.create({
-      model: "meta-llama/llama-3.3-8b-instruct:free",
+      model: "google/gemma-3-12b-it:free",
       messages: [
         {
           role: "system",
           content:
-            "You are a witty, tone-aware social media caption generator.",
+            "You are a witty, tone-aware social media caption generator. Generate engaging captions that match the specified tone and platform. Keep it concise and relevant. Use emojis where appropriate. Avoid hashtags unless specified. Focus on creating captions that resonate with the target audience and platform culture. Directly start generating the caption without any preamble or explanation. Dont include the word 'caption' in the response. Strictly generate the caption only.",
         },
         {
           role: "user",
