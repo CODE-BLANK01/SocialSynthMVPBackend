@@ -15,7 +15,6 @@ export const initiateLinkedInAuth = (req: Request, res: Response) => {
 
   const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
     redirectUri
-<<<<<<< HEAD
   )}&scope=w_member_social%20openid%20email%20profile&state=${state}`;
 
   res.redirect(authUrl);
